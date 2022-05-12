@@ -1,5 +1,5 @@
 const mongoose=require("mongoose")
-const { stringify } = require("nodemon/lib/utils")
+// const { stringify } = require("nodemon/lib/utils")
 
 const users=new mongoose.Schema({
 
@@ -37,6 +37,10 @@ const users=new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    desc:{
+        type:String,
+        max:50
+    }
 },
 {timestamps:true}
 );

@@ -1,8 +1,66 @@
 const router = require("express").Router();
+const User = require("../models/user")
+const bcrypt = require("bcrypt");
 
-// router.get("/",(req,res)=>{
-//     res.send("hey user root")
-// })
-// Update use
-
+router.get("/:id",async (req,res)=>{
+    try{
+        const user =  await User.findById(req.params.id);
+        const {password,updatedAt,createdAt,isAdmin, ...other }=user._doc
+        res.status(200).json(other);
+    }
+    catch(e)
+    {
+        res.status(500).json(e);
+    }
+})
+router.delete("/:id", async (req,res)=>
+{
+    if( req.body.userid === req.params.id)
+    {
+        try{
+            const user= await User.findByIdAndDelete(req.params.id);
+            res.status(200).json("Account Deleted");
+        }
+        catch(e)
+        {
+            res.status(500).send("Wrong user id 1");
+        }
+    }
+    else{
+        res.status(500).send("Wrong user id 2");
+    }
+});
+router.put("/:id", async (req,res)=>
+{
+    if( req.body.userid === req.params.id)
+    {
+        if(req.body.password)
+        {
+            console.log(req.body.password);
+            try{
+                const salt = await bcrypt.genSalt(10);
+                req.body.password = await bcrypt.hash(req.body.password,salt);
+            }
+            catch (e)
+            {
+                console.log(req.body.password);
+                return res.status(500).json("ERROR");
+            }
+        }
+        try{
+            const user= await User.findByIdAndUpdate(req.params.id,{
+                $set:req.body,
+            });
+            res.status(200).json("Account Updated");
+        }
+        catch(e)
+        {
+            res.status(500).send("Wrong user id 1");
+        }
+    }
+    else
+    {
+        res.status(500).send("Wrong user id 2");
+    }
+});
 module.exports = router
