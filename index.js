@@ -7,6 +7,7 @@ const morgan=require("morgan");
 const helmet=require("helmet");
 const userRoute = require("./routes/user")
 const userAuth = require("./routes/auth")
+const post = require("./routes/post")
 dotenv.config();
 app.use(express.json());
 // middleware
@@ -16,6 +17,7 @@ app.use(morgan("common"));
 
 app.use("/api/user",userRoute);
 app.use("/api/auth",userAuth);
+app.use("/api/post",post);
 app.get("/",(req,res)=>
 {
     res.send("Welcome to homepage")
