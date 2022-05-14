@@ -66,9 +66,11 @@ router.put("/like/:id",async(req,res)=>
             if(!post.likes.includes(req.body.user))
             {
                 await post.updateOne({$push:{likes:req.body.user}});
+                res.status(200).json("Post has been liked");
             }
             else{
                 await post.updateOne({$pull:{likes:req.body.user}});
+                res.status(200).json("Post has been unliked");
             }
         }
         else
