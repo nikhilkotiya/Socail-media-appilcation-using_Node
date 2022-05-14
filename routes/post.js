@@ -1,4 +1,5 @@
 const router= require("express").Router();
+const req = require("express/lib/request");
 const Post = require("../models/post")
 
 router.post("/create/:id",async (req,res)=>{
@@ -82,6 +83,35 @@ router.put("/like/:id",async(req,res)=>
     {
         res.status(500).json(error);
     }
-})
-
+});
+router.get("/:id",async(req,res)=>
+{
+    try 
+    {
+        const post = await Post.findById(req.params.id);
+        res.status(200).json(post);    
+    } 
+    catch (error) 
+    {
+        res.status(404).json(error);
+    }
+});
+router.get("/timeline",async(req,res)=>
+{
+    let postArray=[];
+    try{
+        const curruser = await User.findById(req.body.userID);
+        const userPosts = await Post.find({user: curruser._id});
+        const friendPosts = await Promise.all(
+            curruser.following.map((friendId)=>{
+                return Post.find({user:friendId});
+            })
+        );
+        res.json(userPosts.concat(...friendPosts));
+    }  
+    catch(error)
+    {
+        res.status(404).json(error)
+    }
+});
 module.exports = router
