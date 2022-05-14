@@ -56,5 +56,30 @@ router.delete("/delete/:id",async (req,res)=>{
         res.status(500).json(error);
     }
 });
+router.put("/like/:id",async(req,res)=>
+{
+    try
+    {
+        const post = await Post.findById(req.params.id);
+        if(req.body.user !== post.user)
+        {
+            if(!post.likes.includes(req.body.user))
+            {
+                await post.updateOne({$push:{likes:req.body.user}});
+            }
+            else{
+                await post.updateOne({$pull:{likes:req.body.user}});
+            }
+        }
+        else
+        {
+            res.status(404).json("You cann't like you own post");
+        }
+    }
+    catch(error)
+    {
+        res.status(500).json(error);
+    }
+})
 
 module.exports = router
